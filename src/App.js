@@ -21,13 +21,19 @@ export default function App() {
   }, []);
 
   async function handleLikeRepository(id) {
-    const response = await api.post(`repositories/${id}/like`,);
-    const repoIndex = repositories.findIndex(repo => repo.id === id);
-    
-    const repositoriesCopy = repositories.copyWithin();
-    repositoriesCopy.splice(repoIndex, 1, response.data);
+    const response = await api.post(`repositories/${id}/like`);
 
-    setRepositories([...repositoriesCopy]);
+    const likedRepository = response.data;
+
+    const repositoriesUpdated = repositories.map(repo => {
+      if (repo.id === id) {
+        return likedRepository;
+      } else {
+        return repo;
+      };
+    });
+
+    setRepositories(repositoriesUpdated);
   };
 
   return (
@@ -42,8 +48,8 @@ export default function App() {
               <Text style={styles.repository}>{repo.title}</Text>
 
               < View style={styles.techsContainer}>
-                {repo.techs.split(',').map(tech => (
-                  <Text style={styles.tech}>
+                {repo.techs.map(tech => (
+                  <Text key={tech} style={styles.tech}>
                     {tech}
                   </Text>
                 ))
